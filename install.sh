@@ -46,6 +46,11 @@ menu() { # menu VAR "prompt" choice...: numbered menu unless VAR is set
 }
 in_list() { case " $2 " in *" $1 "*) return 0 ;; esac; return 1; }
 ch() { chroot $M /bin/sh -c "$*"; }
+fetch() { # fetch URL: download into $M/tmp with retries (resumes), print the path
+    mkdir -p $M/tmp; f=$M/tmp/${1##*/}
+    curl -fsSL --retry 5 --retry-all-errors --retry-delay 5 -C - -o "$f" "$1" || curl -fsSL --retry 5 -o "$f" "$1"
+    echo "$f"
+}
 
 # --- questions -----------------------------------------------------------
 menu BASE "base system" $BASES
@@ -159,7 +164,7 @@ if ! nix_native; then
     NV=$(curl -fsSL https://nixos.org/nix/install | grep -o 'releases.nixos.org/nix/nix-[0-9.]*[0-9]' | head -1)
     NV=${NV##*/nix-}
     T=/tmp/nix-$NV-x86_64-linux
-    curl -fsSL "https://releases.nixos.org/nix/nix-$NV/nix-$NV-x86_64-linux.tar.xz" | tar -xJ -C $M/tmp
+    f=$(fetch "https://releases.nixos.org/nix/nix-$NV/nix-$NV-x86_64-linux.tar.xz") && tar -xJf "$f" -C $M/tmp && rm "$f"
     mkdir -p $M/nix/store $M/nix/var/nix/profiles/per-user $M/nix/var/nix/gcroots
     mv $M$T/store/* $M/nix/store/
     NIX=$(cd $M/nix/store && ls -d ./*-nix-"$NV" | head -1); NIX=/nix/store/${NIX#./}

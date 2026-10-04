@@ -7,7 +7,7 @@ E="emerge --quiet --getbinpkgonly --usepkgonly --noreplace"
 bootstrap() {
     b=$GENTOO_MIRROR/releases/amd64/autobuilds
     f=$(curl -fsSL "$b/latest-stage3-amd64-desktop-openrc.txt" | grep -o '^[^# ]*stage3[^ ]*\.tar\.xz' | head -1)
-    curl -fsSL "$b/$f" | tar -xJp -C $M --xattrs-include='*.*' --numeric-owner
+    f=$(fetch "$b/$f") && tar -xJpf "$f" -C $M --xattrs-include='*.*' --numeric-owner && rm "$f"
     chroot_mounts
     printf 'FEATURES="getbinpkg binpkg-request-signature"\nACCEPT_LICENSE="*"\n' >> $M/etc/portage/make.conf
     mkdir -p $M/etc/portage/package.use $M/etc/dracut.conf.d

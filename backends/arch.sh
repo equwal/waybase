@@ -3,8 +3,8 @@
 # shellcheck shell=sh disable=SC2034
 ARCH_MIRROR=${ARCH_MIRROR:-https://geo.mirror.pkgbuild.com}
 bootstrap() {
-    curl -fsSL "$ARCH_MIRROR/iso/latest/archlinux-bootstrap-x86_64.tar.zst" |
-        zstd -dc | tar -x -C $M --strip-components=1 --numeric-owner
+    f=$(fetch "$ARCH_MIRROR/iso/latest/archlinux-bootstrap-x86_64.tar.zst")
+    zstd -dc "$f" | tar -x -C $M --strip-components=1 --numeric-owner && rm "$f"
     echo "Server = $ARCH_MIRROR/\$repo/os/\$arch" > $M/etc/pacman.d/mirrorlist
     sed -i 's/^CheckSpace/#CheckSpace/' $M/etc/pacman.conf   # / is not a mount point in the chroot
     chroot_mounts

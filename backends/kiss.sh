@@ -6,8 +6,8 @@
 bootstrap() {
     v=$(curl -fsSL https://api.github.com/repos/kisslinux/repo/releases/latest |
         sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
-    curl -fsSL "https://github.com/kisslinux/repo/releases/download/$v/kiss-chroot-$v.tar.xz" |
-        tar -xJ -C $M --numeric-owner
+    f=$(fetch "https://github.com/kisslinux/repo/releases/download/$v/kiss-chroot-$v.tar.xz")
+    tar -xJf "$f" -C $M --numeric-owner && rm "$f"
     chroot_mounts
     ch "git clone -q https://github.com/kisslinux/repo /var/db/kiss/repo"
     ch "KISS_PATH=/var/db/kiss/repo/core KISS_PROMPT=0 kiss build baseinit" >/dev/null
