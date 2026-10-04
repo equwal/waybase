@@ -164,8 +164,6 @@ if ! nix_native; then
     mv $M$T/store/* $M/nix/store/
     NIX=$(cd $M/nix/store && ls -d ./*-nix-"$NV" | head -1); NIX=/nix/store/${NIX#./}
     CA=$(cd $M/nix/store && ls -d ./*-nss-cacert-* | head -1); CA=/nix/store/${CA#./}
-    ch "$NIX/bin/nix-store --load-db < $T/.reginfo && $NIX/bin/nix-env -p /nix/var/nix/profiles/default -i $NIX $CA" >/dev/null
-    rm -rf "$M$T"
     if ! grep -q '^nixbld:' $M/etc/group; then
         members=""
         i=1; while [ $i -le 32 ]; do
@@ -176,6 +174,8 @@ if ! nix_native; then
         done
         echo "nixbld:x:30000:$members" >> $M/etc/group
     fi
+    ch "$NIX/bin/nix-store --load-db < $T/.reginfo && $NIX/bin/nix-env -p /nix/var/nix/profiles/default -i $NIX $CA" >/dev/null
+    rm -rf "$M$T"
     ch "chgrp nixbld /nix/store && chmod 1775 /nix/store"
 fi
 nix_service
