@@ -36,7 +36,7 @@ EOF
 }
 pkg() { :; }
 pkg_install() { return 1; }
-extra_pkgs() { echo seatd eudev; }
+extra_pkgs() { echo seatd eudev dbus; }
 user_add() {
     ch "adduser -D -s /bin/sh $1"
     for g in wheel video input audio; do ch "addgroup $1 $g" 2>/dev/null || true; done

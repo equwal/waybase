@@ -191,7 +191,7 @@ cat > $M/etc/profile.d/waybase.sh <<EOF
 for f in /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh /etc/profile.d/nix-daemon.sh.nix; do
     [ -r "\$f" ] && . "\$f" && break
 done
-export PATH="\$HOME/.nix-profile/bin:$NIXP/bin:\$PATH"
+export PATH="$HOME/.nix-profile/bin:$NIXP/bin:/nix/var/nix/profiles/default/bin:$PATH"
 export XDG_DATA_DIRS="$NIXP/share:\${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 if [ "\$(id -u)" -ne 0 ] && [ -z "\${WAYLAND_DISPLAY:-}" ] && [ "\$(tty)" = /dev/tty1 ]; then
     exec waybase-session
@@ -225,6 +225,8 @@ if [ -n "$fromnix" ]; then
 EOF
     }
     boot_cmd "ln -sfn $NIXP /run/opengl-driver"
+    # Nix's dbus reads /etc/dbus-1/session.conf, and the store copy includes it back: drop that line.
+    case " $fromnix " in *" dbus "*) mkdir -p $M/etc/dbus-1; ch "sed '/etc.dbus-1.session.conf/d' $NIXP/share/dbus-1/session.conf > /etc/dbus-1/session.conf" ;; esac
 fi
 echo "$fromnix" > $M/etc/waybase-from-nix
 set -- $COMPOSITOR

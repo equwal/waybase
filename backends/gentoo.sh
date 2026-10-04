@@ -3,7 +3,7 @@
 # OpenRC, elogind, dbus, dhcpcd, gentoo-kernel-bin + dracut.
 # shellcheck shell=sh disable=SC2034
 GENTOO_MIRROR=${GENTOO_MIRROR:-https://distfiles.gentoo.org}
-E="emerge --quiet --getbinpkgonly --usepkgonly --noreplace"
+E="emerge --quiet --getbinpkgonly --usepkgonly --binpkg-respect-use=y --noreplace"
 bootstrap() {
     b=$GENTOO_MIRROR/releases/amd64/autobuilds
     f=$(curl -fsSL "$b/latest-stage3-amd64-desktop-openrc.txt" | grep -o '^[^# ]*stage3[^ ]*\.tar\.xz' | head -1)
@@ -43,7 +43,9 @@ boot_cmd() {
 }
 kernel() {
     fw=sys-kernel/linux-firmware; [ "${FIRMWARE:-}" = no ] && fw=""
-    ch "$E sys-kernel/installkernel $fw sys-kernel/gentoo-kernel-bin" >/dev/null
+    # No binhost build of installkernel[dracut] or gentoo-kernel-bin; both only unpack prebuilt files, so nothing compiles.
+    ch "emerge --quiet --getbinpkg --usepkg --binpkg-respect-use=y --noreplace sys-kernel/installkernel" >/dev/null
+    ch "emerge --quiet --getbinpkg --usepkg --binpkg-respect-use=y --noreplace $fw sys-kernel/gentoo-kernel-bin" >/dev/null
     KERNEL=$(cd $M/boot && ls vmlinuz-* | tail -1)
     INITRD=$(cd $M/boot && ls initramfs-* | tail -1)
     KARGS=""
