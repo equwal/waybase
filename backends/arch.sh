@@ -13,6 +13,9 @@ bootstrap() {
     ch "pacman -Syu --noconfirm --needed base linux $fw mkinitcpio cryptsetup e2fsprogs sudo \
         mesa ttf-dejavu" >/dev/null
     echo LANG=C.UTF-8 > $M/etc/locale.conf
+    ln -sf /usr/share/zoneinfo/UTC $M/etc/localtime
+    echo KEYMAP=us > $M/etc/vconsole.conf
+    ch "systemd-machine-id-setup && systemctl mask systemd-firstboot" >/dev/null 2>&1  # no prompts on first boot
     printf '[Match]\nName=en* eth*\n\n[Network]\nDHCP=yes\n' > $M/etc/systemd/network/20-wired.network
     ch "systemctl enable systemd-networkd systemd-resolved" >/dev/null 2>&1
 }
