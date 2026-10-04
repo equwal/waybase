@@ -133,7 +133,7 @@ login(vm, "tester", PW["user"])
 r = vm.run(r"""
 . /etc/profile >/dev/null 2>&1
 nix --version 2>&1 | head -1 | sed 's/^/NIXVER /'
-nix store info --store daemon >/dev/null 2>&1 || nix store ping --store daemon >/dev/null 2>&1 && echo NIXDAEMON_OK
+nix store info --store daemon >/tmp/ns.log 2>&1 && echo NIXDAEMON_OK || tail -3 /tmp/ns.log
 for b in foot fuzzel pipewire wireplumber waybase-session; do command -v $b >/dev/null || echo MISSING:$b; done
 echo FROMNIX $(cat /etc/waybase-from-nix)
 for c in %s; do

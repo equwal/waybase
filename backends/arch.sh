@@ -26,10 +26,8 @@ user_add() { ch "useradd -m -G wheel,video,input,audio -s /bin/bash $1"; }
 serial_getty() { ch "systemctl enable serial-getty@ttyS0" >/dev/null 2>&1; }
 nix_native() { return 1; }
 nix_service() {
-    for u in nix-daemon.socket nix-daemon.service; do
-        ln -sf /nix/var/nix/profiles/default/lib/systemd/system/$u $M/etc/systemd/system/$u
-    done
-    ch "systemctl enable nix-daemon.socket" >/dev/null 2>&1
+    ch "cp /nix/var/nix/profiles/default/lib/systemd/system/nix-daemon.* /etc/systemd/system/ &&
+        systemctl enable nix-daemon.socket"
 }
 boot_cmd() {
     printf '[Unit]\nDescription=waybase boot command\n[Service]\nType=oneshot\nExecStart=/bin/sh -c "%s"\n[Install]\nWantedBy=multi-user.target\n' \

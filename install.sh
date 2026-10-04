@@ -165,7 +165,8 @@ if ! nix_native; then
     NV=${NV##*/nix-}
     T=/tmp/nix-$NV-x86_64-linux
     f=$(fetch "https://releases.nixos.org/nix/nix-$NV/nix-$NV-x86_64-linux.tar.xz") && tar -xJf "$f" -C $M/tmp && rm "$f"
-    mkdir -p $M/nix/store $M/nix/var/nix/profiles/per-user $M/nix/var/nix/gcroots
+    # daemon-socket must exist: nix-daemon.socket has ConditionPathIsReadWrite on it
+    mkdir -p $M/nix/store $M/nix/var/nix/profiles/per-user $M/nix/var/nix/gcroots $M/nix/var/nix/daemon-socket
     mv $M$T/store/* $M/nix/store/
     NIX=$(cd $M/nix/store && ls -d ./*-nix-"$NV" | head -1); NIX=/nix/store/${NIX#./}
     CA=$(cd $M/nix/store && ls -d ./*-nss-cacert-* | head -1); CA=/nix/store/${CA#./}
