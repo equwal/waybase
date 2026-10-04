@@ -227,6 +227,7 @@ EOF
 fi
 echo "$fromnix" > $M/etc/waybase-from-nix
 set -- $COMPOSITOR
+mkdir -p $M/usr/local/bin
 cat > $M/usr/local/bin/waybase-session <<EOF
 #!/bin/sh
 # Start the default compositor ($1) with PipeWire.
