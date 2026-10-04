@@ -1,0 +1,5 @@
+# $M is the fixed mount point /mnt/waybase; package lists split on purpose.
+disable=SC2086,SC2012,SC2016,SC2153
+# variables are shared with the sourced backends
+disable=SC2034
+shell=sh
