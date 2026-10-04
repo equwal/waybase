@@ -11,7 +11,7 @@ bootstrap() {
     chroot_mounts
     ch "git clone -q https://github.com/kisslinux/repo /var/db/kiss/repo"
     ch "KISS_PATH=/var/db/kiss/repo/core KISS_PROMPT=0 kiss build baseinit" >/dev/null
-    mkdir -p $M/etc/sv $M/var/service
+    mkdir -p $M/etc/sv $M/var/service $M/etc/rc.d
     sv() { # sv NAME COMMAND: runit service
         mkdir -p $M/etc/sv/$1
         printf '#!/bin/sh\nexec %s\n' "$2" > $M/etc/sv/$1/run
