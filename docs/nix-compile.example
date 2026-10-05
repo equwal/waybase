@@ -1,0 +1,28 @@
+#!/bin/sh
+# Rebuild the Nix profiles; collect garbage at start, after each build and on exit.
+# Edit the paths and attributes for your sys.nix. Run as root.
+set -u
+cd "$(dirname "$0")" || exit 1
+mkdir -p compile-logs
+LOG=compile-logs/compile-log-$(date +%Y%m%d-%H%M%S).txt
+
+# the store needs room for build inputs: drop old generations, then collect garbage
+gc_cleanup() {
+	echo "== gc_cleanup ($1)"; df -h /nix | tail -1
+	nix-collect-garbage -d >/dev/null 2>&1
+	df -h /nix | tail -1
+}
+
+build() { NIXPKGS_ALLOW_UNFREE=1 nix-build sys.nix -A "$1" -o "$2"; }
+
+main() {
+	trap 'gc_cleanup exit' EXIT
+	rc=0
+	gc_cleanup start
+	build user /usr/local/nix-user || rc=1
+	gc_cleanup after-user
+	build system /usr/local/nix-system || rc=1
+	echo "== done rc=$rc"
+	return $rc
+}
+main 2>&1 | tee -a "$LOG"

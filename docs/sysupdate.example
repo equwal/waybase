@@ -1,0 +1,17 @@
+#!/bin/sh -e
+# Update everything: system packages, Nix, then each source repo in the list below.
+# Copy to a directory on PATH and edit the list and the commands for your system.
+# system packages: replace with your distro's updater (kiss update, apt upgrade, ...)
+kiss update
+# Nix: rebuild the system profile with the compile script from nix-compile.example
+su -c '/path/to/nix-compile.sh'
+# format: "dir mode [build command]"; custom = merge upstream into a patched branch, shell on conflict
+while read -r dir mode build <&3; do
+	cd "$dir" || continue
+	git pull --ff-only || true
+	[ "$mode" = custom ] && { git remote set-head origin -a >/dev/null && git merge origin/HEAD || ${SHELL:-sh}; }
+	[ -z "$build" ] || sh -c "$build"
+done 3<<EOF
+# $HOME/src/patched-project custom make && su -c 'make install'
+# $HOME/src/plain-project pull
+EOF
