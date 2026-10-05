@@ -11,5 +11,7 @@ USER_PASS=change-me
 ROOT_PASS=change-me
 HOSTNAME_NEW=waybase
 #FIRMWARE=no              # skip linux-firmware (VMs)
+#FIRMWARE_TAG=20260916      # pinned linux-firmware files: tag and list (see firmware.example)
+#FIRMWARE_LIST=$D/firmware.example
 #SERIAL=1                 # console and login on ttyS0 (tests)
 #NIXPKGS=github:NixOS/nixpkgs/nixos-unstable

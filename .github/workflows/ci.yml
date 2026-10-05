@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: shellcheck install.sh build-image.sh test.sh backends/*.sh
+      - run: shellcheck install.sh firmware.sh build-image.sh test.sh backends/*.sh
       - run: python3 -m py_compile test-qemu.py
   qemu-smoke:
     # Alpine + sway, LUKS: build the image, install, boot, check (about 20 min).

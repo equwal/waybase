@@ -15,6 +15,8 @@
 #   SERIAL=1    login getty on ttyS0 and kernel console there (for tests)
 #   NIXPKGS     flake ref for Nix-supplied packages (default: nixpkgs)
 #   FIRMWARE=no skip linux-firmware (VMs; real hardware usually needs it)
+#   FIRMWARE_TAG, FIRMWARE_LIST   install the pinned files of LIST (SHA256 PATH lines, see firmware.sh)
+#               from linux-firmware tag FIRMWARE_TAG into /lib/firmware
 set -eu
 D=$(cd "$(dirname "$0")" && pwd)
 M=/mnt/waybase
@@ -289,6 +291,7 @@ esac; done
 ch "chown -R $USERNAME:\$(id -g $USERNAME) /home/$USERNAME"
 
 # --- kernel, initramfs, bootloader --------------------------------------
+[ -n "${FIRMWARE_LIST:-}" ] && { log "pinned firmware"; sh "$D/firmware.sh" -r $M "${FIRMWARE_TAG:?FIRMWARE_TAG is required with FIRMWARE_LIST}" "$FIRMWARE_LIST"; }
 log "kernel + initramfs"
 kernel
 if [ "$ENCRYPT" = yes ]; then ROOTARG="root=/dev/mapper/root $CRYPTARGS"; else ROOTARG="root=UUID=$UR"; fi

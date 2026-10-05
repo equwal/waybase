@@ -1,0 +1,3 @@
+# SHA256 PATH of one linux-firmware file, pinned to the tag in FIRMWARE_TAG.
+# firmware.sh -s TAG prints lines like these for the files dmesg reports missing.
+2cde41c3e5ad181423bcc3e98ff9c49f743c88f18646af4d0b3c3a9664b831a1 i915/kbl_dmc_ver1_04.bin

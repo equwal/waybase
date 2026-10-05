@@ -110,6 +110,7 @@ t0 = time.time()
 vm = VM(uefi=True, live=True)
 vm.expect("login:", 900); vm.send("root"); time.sleep(5)
 answers = (f"BASE={base}\nCOMPOSITOR='{comps}'\nDISK=/dev/vda\nYES=1\nSERIAL=1\nFIRMWARE=no\n"
+           f"FIRMWARE_TAG=20260916\nFIRMWARE_LIST=$D/firmware.example\n"
            f"ENCRYPT={'yes' if encrypt else 'no'}\nLUKS_PASS={PW['luks']}\nUSERNAME=tester\n"
            f"USER_PASS={PW['user']}\nROOT_PASS={PW['root']}\n")
 vm.run(f"cat > /tmp/answers <<'EOA'\n{answers}EOA")
@@ -136,6 +137,7 @@ nix --version 2>&1 | head -1 | sed 's/^/NIXVER /'
 nix store info --store daemon >/tmp/ns.log 2>&1 && echo NIXDAEMON_OK || tail -3 /tmp/ns.log
 for b in foot fuzzel pipewire wireplumber waybase-session; do command -v $b >/dev/null || echo MISSING:$b; done
 echo FROMNIX $(cat /etc/waybase-from-nix)
+test -s /lib/firmware/i915/kbl_dmc_ver1_04.bin && echo FW_OK
 for c in %s; do
   d=$(mktemp -d); chmod 700 $d
   XDG_RUNTIME_DIR=$d WLR_BACKENDS=headless WLR_RENDERER=pixman WLR_LIBINPUT_NO_DEVICES=1 $c >/tmp/$c.log 2>&1 &
@@ -147,6 +149,7 @@ done
 """ % comps, 900)
 check("nix --version", "NIXVER nix (Nix)" in r, (re.search(r"NIXVER (.*)", r) or [None, ""])[1].strip())
 check("nix daemon reachable", "NIXDAEMON_OK" in r)
+check("pinned firmware installed", "FW_OK" in r)
 check("session programs", "MISSING:" not in r, " ".join(re.findall(r"MISSING:\S+", r)))
 note("supplied by Nix: " + (re.search(r"FROMNIX(.*)", r) or [None, ""])[1].strip())
 for c in comps.split():

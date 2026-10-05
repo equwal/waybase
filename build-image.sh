@@ -13,7 +13,7 @@ build() {
     ISO=$OUT/alpine-standard-$R-x86_64.iso
     [ -s "$ISO" ] || wget -q -O "$ISO" "https://dl-cdn.alpinelinux.org/alpine/v$V/releases/x86_64/${ISO##*/}"
     W=$(mktemp -d); mkdir -p "$W/waybase"
-    cp -r "$SRC/install.sh" "$SRC/answers.example" "$SRC/backends" "$W/waybase/"
+    cp -r "$SRC/install.sh" "$SRC/firmware.sh" "$SRC/firmware.example" "$SRC/answers.example" "$SRC/backends" "$W/waybase/"
     # serial console as well as the screen, so the installer runs headless too
     xorriso -osirrox on -indev "$ISO" -extract /boot/grub/grub.cfg "$W/grub.cfg" \
         -extract /boot/syslinux/syslinux.cfg "$W/syslinux.cfg" 2>/dev/null
